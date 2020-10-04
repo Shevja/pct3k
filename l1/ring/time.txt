@@ -1,6 +1,7 @@
-Message size: 1024B
+Ring
 
-process 0: 0.000093
-process 2: 0.000030
-process 1: 0.000059
-process 3: 0.000063
+Message size: 1048576B
+process 1: 0.001939
+process 2: 0.002875
+process 0: 0.003421
+process 3: 0.003462

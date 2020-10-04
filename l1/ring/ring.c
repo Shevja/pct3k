@@ -4,36 +4,41 @@
 
 int main(int argc, char **argv)
 {
-    int n = 1024;
-    FILE *fp = fopen("time.txt", "w");
-    fprintf(fp,"Message size: %dB\n\n", n);
-    fclose(fp); 
+    int n = 1;//1B, 1KB, 1MB
+    FILE *fp = fopen("time.txt", "a+");
+    fprintf(fp,"\nMessage size: %dB\n", n);
+    fclose(fp);
     
     int rank, commsize;
     
     MPI_Init(&argc, &argv);
-
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Status stat;
     
     char *m = malloc(n * sizeof(char));
+    // if (rank == 0)
+    //     m[0] = 'v';
     char *m1 = malloc(n * sizeof(char));
 
     int right = (rank + 1) % commsize;
     int left = (rank - 1 + commsize) % commsize;
-
-    double time = MPI_Wtime();
-    for (int i = 0; i < commsize-1; i++)
+    double time;
+    
+    time = MPI_Wtime();
+    if (rank == 0)
     {
-        MPI_Request reqs[2];
-        MPI_Status stat[2];
-
-        MPI_Irecv(m1, n, MPI_CHAR, left, 0, MPI_COMM_WORLD, &reqs[0]);
-        MPI_Isend(m, n, MPI_CHAR, right, 0, MPI_COMM_WORLD, &reqs[1]);
-
-        MPI_Waitall(2, reqs, stat);
+        MPI_Send(m, n, MPI_CHAR, right, 0, MPI_COMM_WORLD);
+        MPI_Recv(m1, n, MPI_CHAR, left, 0, MPI_COMM_WORLD, &stat);
+    }
+    else
+    {
+        MPI_Recv(m, n, MPI_CHAR, left, 0, MPI_COMM_WORLD, &stat);
+        MPI_Send(m, n, MPI_CHAR, right, 0, MPI_COMM_WORLD);
     }
     time = MPI_Wtime() - time;
+
+    // printf("process %d: %c\n", rank, m[0]);
 
     fp = fopen("time.txt", "a+");
     if (fp == NULL)
