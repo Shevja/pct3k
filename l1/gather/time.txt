@@ -1,6 +1,6 @@
-Message size: 3B
+Message size: 1B
 
-process 2: 0.000014
-process 3: 0.000017
-process 1: 0.000019
-process 0: 0.001570
+process 2: 0.000010
+process 1: 0.000009
+process 3: 0.000012
+process 0: 0.000910

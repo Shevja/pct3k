@@ -2,6 +2,17 @@
 #include <malloc.h>
 #include <mpi.h>
 
+int mc(char *to, char *from, int n)
+{
+    for(int i = 0; i < n; i++)
+    {
+       to[i] = from[i];
+       printf("%c", to[i]);
+    }
+
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     int n = 1;//1KB, 1 MB
@@ -16,7 +27,7 @@ int main(int argc, char **argv)
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
 
     char *sbuf = malloc(n * sizeof(char));
-    char *rbuf = malloc(n * sizeof(char) * (commsize-1));
+    char *rbuf = malloc(n * sizeof(char) * (commsize));
     // if (rank == 1)
     // {
     //     sbuf[0] = 'a';
@@ -29,7 +40,10 @@ int main(int argc, char **argv)
     // {
     //     sbuf[0] = 'c';
     // }
-
+    // else
+    // {
+    //     sbuf[0] = 'p';
+    // }
     
 
     double time = MPI_Wtime();
@@ -40,9 +54,16 @@ int main(int argc, char **argv)
     else
     {
         MPI_Status stat;
-        for (int i = 0; i < commsize-1; i++)
+        for (int i = 0; i < commsize; i++)
         {
-            MPI_Recv(rbuf + i * n, n*(commsize-1), MPI_CHAR, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &stat); 
+            if (i == 0)
+            {
+                mc(rbuf, sbuf, n);
+            }
+            else
+            {
+                MPI_Recv(rbuf + i * n, n*(commsize-1), MPI_CHAR, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &stat); 
+            }
         }
     }
     time = MPI_Wtime() - time;
