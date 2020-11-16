@@ -1,6 +1,0 @@
-Message size: 1048576B
-
-process 1: 0.000649
-process 2: 0.001034
-process 3: 0.002672
-process 0: 0.002619

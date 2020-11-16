@@ -15,10 +15,7 @@ int mc(char *to, char *from, int n)
 
 int main(int argc, char **argv)
 {
-    int n = 1;//1KB, 1 MB
-    FILE *fp = fopen("time.txt", "w");
-    fprintf(fp,"Message size: %dB\n\n", n);
-    fclose(fp);
+    int n = 1024;//1KB, 1 MB
 
     int rank, commsize;
     MPI_Init(&argc, &argv);
@@ -70,15 +67,7 @@ int main(int argc, char **argv)
 
     if (rank == 0)
         printf("process %d: %s\n", rank, rbuf);
-
-    fp = fopen("time.txt", "a");
-    if (fp == NULL)
-    {
-        printf("Can't open file\n");
-        return -1;
-    }
-    fprintf(fp, "process %d: %f\n", rank, time);
-    fclose(fp);
+    printf("process %d: %f\n", rank, time);
 
     MPI_Finalize();
 

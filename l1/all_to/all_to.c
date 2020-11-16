@@ -80,14 +80,7 @@ int main(int argc, char **argv)
 
     // printf("process %d: %s\n", rank, rbuf);
 
-    fp = fopen("time.txt", "a+");
-    if (fp == NULL)
-    {
-        printf("Can't open file\n");
-        return -1;
-    }
-    fprintf(fp, "process %d: %f\n", rank, time);
-    fclose(fp);
+    printf("process %d: %f\n", rank, time);
 
     MPI_Finalize();
     return 0;

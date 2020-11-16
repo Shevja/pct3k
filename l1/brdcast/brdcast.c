@@ -36,15 +36,8 @@ int main(int argc, char **argv)
     time = MPI_Wtime() - time;
 
     // printf("process %d: %c\n", rank, rbuf[0]);
-    
-    fp = fopen("time.txt", "a");
-    if (fp == NULL)
-    {
-        printf("Can't open file\n");
-        return -1;
-    }
-    fprintf(fp, "process %d: %f\n", rank, time);
-    fclose(fp);
+      
+    printf("process %d: %f\n", rank, time);
 
     MPI_Finalize();
     return 0;
