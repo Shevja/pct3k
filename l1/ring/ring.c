@@ -4,7 +4,7 @@
 
 int main(int argc, char **argv)
 {
-    int n = 1;//1B, 1KB, 1MB
+    int n = 1024*1024;//1B, 1KB, 1MB
     int rank, commsize;
 
     MPI_Init(&argc, &argv);
@@ -18,8 +18,6 @@ int main(int argc, char **argv)
     char *sbuf;
     char *rbuf;
 
-    if (rank == 0)
-        printf("Message size: %dB\n", n);
     sbuf = malloc(n * sizeof(char));
     sbuf[0] = 'a';
     rbuf = malloc(n * sizeof(char));

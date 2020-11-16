@@ -25,23 +25,6 @@ int main(int argc, char **argv)
 
     char *sbuf = malloc(n * sizeof(char));
     char *rbuf = malloc(n * sizeof(char) * (commsize));
-    if (rank == 1)
-    {
-        sbuf[0] = 'a';
-    }
-    else if (rank == 2)
-    {
-        sbuf[0] = 'b';
-    }
-    else if (rank == 3)
-    {
-        sbuf[0] = 'c';
-    }
-    else
-    {
-        sbuf[0] = 'p';
-    }
-    
 
     double time = MPI_Wtime();
     if (rank > 0)
@@ -59,7 +42,7 @@ int main(int argc, char **argv)
             }
             else
             {
-                MPI_Recv(rbuf + i * n, n, MPI_CHAR, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &stat); 
+                MPI_Recv(rbuf + i * n, n, MPI_CHAR, i, 0, MPI_COMM_WORLD, &stat); 
             }
         }
     }

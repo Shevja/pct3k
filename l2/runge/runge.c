@@ -11,10 +11,10 @@ double getrand()
 { 
     return (double)rand() / RAND_MAX;
 }
+
 double func(double x, double y) 
 { 
     return pow(x, 4)/(0.5*pow(x, 2) + x + 6);
-    // return 3 * pow(y, 2) * pow(sin(x), 2); 
 }
 
 int main(int argc, char **argv)
@@ -22,16 +22,19 @@ int main(int argc, char **argv)
     int rank, commsize;
     MPI_Init(&argc, &argv);
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
-    srand(rank);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    srand(rank);
     int in = 0;
     double s = 0;
+    
+    double time = MPI_Wtime();
+
     for (int i = rank; i < n; i += commsize)
     {
-        double x = getrand() * PI; /* x in [0, pi] */
-        double y = getrand();      /* y in [0, sin(x)] */
+        double x = getrand();
+        double y = getrand();
         if (y <= sin(x))
         {
             in++;
@@ -44,11 +47,16 @@ int main(int argc, char **argv)
     double gsum = 0.0;
     MPI_Reduce(&s, &gsum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
+    time = MPI_Wtime() - time;
+
+    double max_time = 0.0;
+	MPI_Reduce(&time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
     if (rank == 0)
     {
         double v = PI * gin / n;
         double res = v * gsum / gin;
-        printf("Result: %.12f, n %d\n", res, n);
+        printf("%d %f\n", commsize, max_time);
     }
     MPI_Finalize();
 

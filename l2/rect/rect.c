@@ -6,7 +6,6 @@
 double func(double x)
 {
     return (1 - exp(0.7/x))/(2 + x);
-    //return exp(-x * x);
 }
 
 const double eps = 1E-6;
@@ -25,6 +24,7 @@ int main(int argc, char **argv) //F(х)= (1 - eхp(0.7/х))/(2 + х), a = 1, b =
     int n = n0, k;
     double sq[2], delta = 1;
     
+    double time = MPI_Wtime();
     for (k = 0; delta > eps; n *= 2, k ^= 1)
     {
         int points_per_proc = n / commsize;
@@ -42,10 +42,14 @@ int main(int argc, char **argv) //F(х)= (1 - eхp(0.7/х))/(2 + х), a = 1, b =
         if (n > n0)
             delta = fabs(sq[k] - sq[k ^ 1]) / 3.0;
     }
+    time = MPI_Wtime() - time;
+
+    double max_time = 0.0;
+	MPI_Reduce(&time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if (rank == 0)
     {
-        printf("Result: %.12f; Rungerule: EPS %e, n %d\n", sq[k], eps, n / 2);
+        printf("%d %f\n", commsize, max_time);
     }
 
     MPI_Finalize();

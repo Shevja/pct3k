@@ -7,7 +7,6 @@ int mc(char *to, char *from, int n)
     for (int i = 0; i < n; i++)
     {
         to[i] = from[i];
-        printf("%c", to[i]);
     }
 
     return 0;
@@ -27,50 +26,23 @@ int main(int argc, char **argv)
     MPI_Comm_size(MPI_COMM_WORLD, &commsize);
 
     char *sbuf = malloc(n * sizeof(char));
-    char *rbuf = malloc(n * sizeof(char) * commsize - 1);
-    // if (rank == 1)
-    // {
-    //     sbuf[0] = 'a';
-    // }
-    // else if (rank == 2)
-    // {
-    //     sbuf[0] = 'b';
-    // }
-    // else if (rank == 3)
-    // {
-    //     sbuf[0] = 'c';
-    // }
-    // else
-    // {
-    //     sbuf[0] = 'e';
-    // }
+    char *rbuf = malloc(n * sizeof(char) * (commsize - 1));
 
     double time = MPI_Wtime();
     MPI_Request reqs[(commsize - 1) * 2];
     MPI_Status stat[(commsize - 1) * 2];
 
     int j = 0;
-    for (int i = 0; i < commsize; i++, j++)
+    for (int i = 0; i < commsize; i++)
     {
         if (rank != i)
         {
-            MPI_Irecv(rbuf + i * n, n, MPI_CHAR, i, 0, MPI_COMM_WORLD, &reqs[j]);
+            MPI_Irecv(rbuf + i * n, n, MPI_CHAR, i, 0, MPI_COMM_WORLD, &reqs[j++]);
+            MPI_Isend(sbuf, n, MPI_CHAR, i, 0, MPI_COMM_WORLD, &reqs[j++]);
         }
         else
         {
             mc(rbuf + i * n, sbuf, n);
-            j--;
-        }
-    }
-    for (int i = 0; i < commsize; i++, j++)
-    {
-        if (rank != i)
-        {
-            MPI_Isend(sbuf, n, MPI_CHAR, i, 0, MPI_COMM_WORLD, &reqs[j]);
-        }
-        else
-        {
-            j--;
         }
     }
 
