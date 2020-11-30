@@ -3,13 +3,13 @@
 #include <math.h>
 #include <mpi.h>
 
+const double eps = 1E-6;
+const int n0 = 10000000;
+
 double func(double x)
 {
     return (1 - exp(0.7/x))/(2 + x);
 }
-
-const double eps = 1E-6;
-const int n0 = 100;
 
 int main(int argc, char **argv) //F(х)= (1 - eхp(0.7/х))/(2 + х), a = 1, b = 2
 {
@@ -49,7 +49,9 @@ int main(int argc, char **argv) //F(х)= (1 - eхp(0.7/х))/(2 + х), a = 1, b =
 
     if (rank == 0)
     {
-        printf("%d %f\n", commsize, max_time);
+        FILE *info = fopen("result.out", "ab");
+        fprintf(info, "%d;%.6f;\n", commsize, max_time);
+        fclose(info);
     }
 
     MPI_Finalize();

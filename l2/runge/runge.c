@@ -4,8 +4,8 @@
 #include <math.h>
 #include <mpi.h>
 
-const double PI = 3.14159265358979323846;
 const int n = 10000000;
+// const int n = 100000000;
 
 double getrand() 
 { 
@@ -14,7 +14,7 @@ double getrand()
 
 double func(double x, double y) 
 { 
-    return pow(x, 4)/(0.5*pow(x, 2) + x + 6);
+    return x/pow(y, 2);
 }
 
 int main(int argc, char **argv)
@@ -34,8 +34,8 @@ int main(int argc, char **argv)
     for (int i = rank; i < n; i += commsize)
     {
         double x = getrand();
-        double y = getrand();
-        if (y <= sin(x))
+        double y = getrand()*5;
+        if (y > 2 && y < 5)
         {
             in++;
             s += func(x, y);
@@ -54,9 +54,11 @@ int main(int argc, char **argv)
 
     if (rank == 0)
     {
-        double v = PI * gin / n;
+        double v = (double)gin / (double)n;
         double res = v * gsum / gin;
-        printf("%d %f\n", commsize, max_time);
+        FILE *info = fopen("result.out", "ab");
+        fprintf(info, "%d;%.6f;\n", commsize, max_time);
+        fclose(info);
     }
     MPI_Finalize();
 
