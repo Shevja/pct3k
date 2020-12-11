@@ -4,8 +4,8 @@
 #include <math.h>
 #include <mpi.h>
 
-const int n = 10000000;
 // const int n = 100000000;
+const int n = 1000000000;
 
 double getrand() 
 { 
